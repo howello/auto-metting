@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exe4j version="8.0.1" transformSequenceNumber="3">
+  <directoryPresets config="E:/howe/auto-metting/target" />
+  <application name="AutoMetting" distributionSourceDir="D:/工具/AutoMetting" />
+  <executable name="AutoMetting" wrapperType="embed" iconSet="true" iconFile="E:/howe/auto-metting/1.ico" executableDir="." executableMode="gui" singleInstance="true" checkConsoleParameter="true" />
+  <java mainClass="com.howe.Main" preferredVM="client" minVersion="1.8" allowBetaVM="true">
+    <classPath>
+      <archive location="E:/howe/auto-metting/target/auto-metting-2.0-jar-with-dependencies.jar" failOnError="false" />
+    </classPath>
+    <nativeLibraryDirectories>
+      <directory name="./tessdata" />
+    </nativeLibraryDirectories>
+  </java>
+</exe4j>
