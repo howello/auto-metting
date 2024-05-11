@@ -26,6 +26,13 @@ public class Main {
 
     protected static WindowFrame FRAME;
 
+    protected static final Image ICON;
+
+    static {
+        URL resource = ResourceUtil.getResource("1.png");
+        ICON = new ImageIcon(resource).getImage();
+    }
+
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -49,16 +56,13 @@ public class Main {
     private static void initTray() {
 
         if (SystemTray.isSupported()) {
-            URL resource = ResourceUtil.getResource("1.png");
-            ImageIcon icon = new ImageIcon(resource);
             PopupMenu pop = new PopupMenu();
-
             MenuItem exitItem = new MenuItem("  退出  ");
             exitItem.addActionListener(e -> System.exit(0));
 
             pop.add(exitItem);
 
-            TrayIcon tray = new TrayIcon(icon.getImage(), "自动会议", pop);
+            TrayIcon tray = new TrayIcon(ICON, "自动会议", pop);
             tray.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {

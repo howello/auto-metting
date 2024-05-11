@@ -27,6 +27,7 @@ public class TaskListWindow extends JFrame {
         setTitle("任务列表");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setIconImage(Main.ICON);
 
         DefaultTableModel defaultTableModel = updateTable();
         // 创建表格

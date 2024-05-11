@@ -63,7 +63,7 @@ public class WindowFrame extends JFrame {
         setSize(750, 500);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        setVisible(false);
+        setIconImage(Main.ICON);
 
         aheadTimePanel.setMaximumSize(new Dimension(2147483647, 50));
         aheadTimePanel.setBorder(new EmptyBorder(20, 30, 20, 30));
@@ -191,14 +191,12 @@ public class WindowFrame extends JFrame {
         add(buttonPanel);
 
         tipLabel.setText("日期格式：yyyy/MM/dd HH:mm");
-        tipLabel.setForeground(Color.BLACK);
+        tipLabel.setForeground(Color.WHITE);
         tipLabel.setHorizontalTextPosition(SwingConstants.LEFT);
         add(tipLabel);
         // 设置窗口属性
         setLocationRelativeTo(null);
         setVisible(true);
-
-
     }
 
 
