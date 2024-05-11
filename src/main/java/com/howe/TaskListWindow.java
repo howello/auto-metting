@@ -7,6 +7,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 /**
@@ -67,10 +69,36 @@ public class TaskListWindow extends JFrame {
         pack();
         setLocationRelativeTo(Main.FRAME);
         setVisible(true);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                setVisible(false);
+                Main.FRAME.setVisible(true);
+            }
+        });
     }
 
     private void createPopupMenu() {
         popupMenu = new JPopupMenu();
+
+        JMenuItem addWeekMenItem = new JMenuItem();
+        addWeekMenItem.setText("  添加周例会  ");
+        addWeekMenItem.addActionListener(evt -> {
+            String num = JOptionPane.showInputDialog(null, "输入周例会会议号：", "45661827839");
+            if (Main.mettingList.stream().anyMatch(m -> num.equals(m.getNum()))) {
+                JOptionPane.showMessageDialog(null, "有这会议了，先删除了再添加吧");
+                return;
+            }
+
+            MettingDTO mettingDTO = new MettingDTO("45661827839", "周例会");
+            mettingDTO.setCron("0 53 16 * * 5");
+            mettingDTO = Main.FRAME.createMettingTask(mettingDTO);
+            Main.mettingList.add(mettingDTO);
+            updateTable();
+        });
+        popupMenu.add(addWeekMenItem);
+
         JMenuItem delMenItem = new JMenuItem();
         delMenItem.setText("  删除  ");
         delMenItem.addActionListener(evt -> {
@@ -83,25 +111,24 @@ public class TaskListWindow extends JFrame {
             }
         });
         popupMenu.add(delMenItem);
-        JMenuItem addWeekMenItem = new JMenuItem();
-        addWeekMenItem.setText("  添加周例会  ");
-        addWeekMenItem.addActionListener(evt -> {
-            String num = JOptionPane.showInputDialog(null, "输入周例会会议号：", "45661827839");
-            if (Main.mettingList.stream().anyMatch(m -> num.equals(m.getNum()))) {
-                JOptionPane.showMessageDialog(null, "有这会议了，先删除了再添加吧");
-                return;
-            }
 
-            MettingDTO mettingDTO = new MettingDTO("45661827839", "周例会");
-            mettingDTO.setCron("0 53 16 * * 5");
-            mettingDTO = Main.createMettingTask(mettingDTO);
-            Main.mettingList.add(mettingDTO);
-            updateTable();
+        JMenuItem startNowMenItem = new JMenuItem();
+        startNowMenItem.setText("立即开始");
+        startNowMenItem.addActionListener(evt -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                MettingDTO mettingDTO = Main.mettingList.get(selectedRow);
+                int confirmDialog = JOptionPane.showConfirmDialog(getContentPane(), "要立即开始这个会议吗？\r\n会议号：" + mettingDTO.getNum(), "提示",
+                        JOptionPane.YES_NO_OPTION);
+                if (confirmDialog == JOptionPane.YES_OPTION) {
+                    Main.FRAME.startMetting(mettingDTO.getNum());
+                }
+            }
         });
-        popupMenu.add(addWeekMenItem);
+        popupMenu.add(startNowMenItem);
     }
 
-    public DefaultTableModel updateTable(){
+    public DefaultTableModel updateTable() {
         // 创建表格模型
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.addColumn("会议号码");
