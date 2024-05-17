@@ -1,6 +1,11 @@
-package com.howe;
+package com.howe.view;
 
 import cn.hutool.cron.CronUtil;
+import com.howe.Main;
+import com.howe.dto.MettingDTO;
+import com.howe.enums.StatusEnum;
+import com.howe.utils.ConfigUtils;
+import com.howe.utils.SwUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -87,15 +92,10 @@ public class TaskListWindow extends JFrame {
         addWeekMenItem.setText("  添加周例会  ");
         addWeekMenItem.addActionListener(evt -> {
             String num = JOptionPane.showInputDialog(null, "输入周例会会议号：", "45661827839");
-            if (Main.mettingList.stream().anyMatch(m -> num.equals(m.getNum()))) {
-                JOptionPane.showMessageDialog(null, "有这会议了，先删除了再添加吧");
+            if (ConfigUtils.contains(num)) {
                 return;
             }
-
-            MettingDTO mettingDTO = new MettingDTO("45661827839", "周例会");
-            mettingDTO.setCron("0 53 16 * * 5");
-            mettingDTO = Main.FRAME.createMettingTask(mettingDTO);
-            Main.mettingList.add(mettingDTO);
+            SwUtils.addWeekMetting(num);
             updateTable();
         });
         popupMenu.add(addWeekMenItem);
@@ -105,9 +105,8 @@ public class TaskListWindow extends JFrame {
         delMenItem.addActionListener(evt -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow >= 0) {
-                MettingDTO mettingDTO = Main.mettingList.get(selectedRow);
-                CronUtil.remove(mettingDTO.getId());
-                Main.mettingList.remove(selectedRow);
+                MettingDTO mettingDTO = ConfigUtils.read().get(selectedRow);
+                ConfigUtils.remove(mettingDTO);
                 ((DefaultTableModel) table.getModel()).removeRow(selectedRow);
             }
         });
@@ -118,11 +117,13 @@ public class TaskListWindow extends JFrame {
         startNowMenItem.addActionListener(evt -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow >= 0) {
-                MettingDTO mettingDTO = Main.mettingList.get(selectedRow);
+                MettingDTO mettingDTO = ConfigUtils.read().get(selectedRow);
                 int confirmDialog = JOptionPane.showConfirmDialog(getContentPane(), "要立即开始这个会议吗？\r\n会议号：" + mettingDTO.getNum(), "提示",
                         JOptionPane.YES_NO_OPTION);
                 if (confirmDialog == JOptionPane.YES_OPTION) {
-                    Main.FRAME.startMetting(mettingDTO.getNum());
+                    SwUtils.startMetting(mettingDTO.getNum());
+                    mettingDTO.setStatus(StatusEnum.JOIN);
+                    ConfigUtils.add(mettingDTO);
                 }
             }
         });
@@ -137,7 +138,7 @@ public class TaskListWindow extends JFrame {
         tableModel.addColumn("描述");
         tableModel.addColumn("状态");
 
-        List<MettingDTO> mettingList = Main.mettingList;
+        List<MettingDTO> mettingList = ConfigUtils.read();
         for (MettingDTO mettingDTO : mettingList) {
             tableModel.addRow(mettingDTO.genArr());
         }

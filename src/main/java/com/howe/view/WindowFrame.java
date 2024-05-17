@@ -1,4 +1,4 @@
-package com.howe;
+package com.howe.view;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -8,6 +8,11 @@ import cn.hutool.core.util.RuntimeUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
+import com.howe.Main;
+import com.howe.dto.MettingDTO;
+import com.howe.enums.StatusEnum;
+import com.howe.utils.ConfigUtils;
+import com.howe.utils.SwUtils;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -152,8 +157,7 @@ public class WindowFrame extends JFrame {
                         JOptionPane.showMessageDialog(getContentPane(), "会议号得有啊，大哥");
                         return;
                     }
-                    if (Main.mettingList.stream().anyMatch(m -> num.equals(m.getNum()))) {
-                        JOptionPane.showMessageDialog(getContentPane(), "有这会议了，先删除了再添加吧");
+                    if (ConfigUtils.contains(num)) {
                         return;
                     }
 
@@ -164,8 +168,8 @@ public class WindowFrame extends JFrame {
                     }
                     DateTime offsetMinute = DateUtil.offsetMinute(time, (int) NumberUtil.sub(0, Integer.parseInt(aheadNum)));
                     mettingDTO.setTime(offsetMinute.isBeforeOrEquals(DateTime.now()) ? time : offsetMinute);
-                    mettingDTO = createMettingTask(mettingDTO);
-                    Main.mettingList.add(mettingDTO);
+                    mettingDTO = SwUtils.createMettingTask(mettingDTO);
+                    ConfigUtils.add(mettingDTO);
                     mettingNumField.setText("");
                     mettingTimeField.setText("");
                     mettingDataField.setText("");
@@ -184,7 +188,10 @@ public class WindowFrame extends JFrame {
                 JOptionPane.showMessageDialog(getContentPane(), "会议号为空");
                 return;
             }
-            startMetting(num);
+            SwUtils.startMetting(num);
+            MettingDTO mettingDTO = new MettingDTO(num, "立即入会");
+            mettingDTO.setStatus(StatusEnum.JOIN);
+            ConfigUtils.add(mettingDTO);
         });
         buttonPanel.add(startNowBtn);
 
@@ -216,39 +223,6 @@ public class WindowFrame extends JFrame {
             JOptionPane.showMessageDialog(getContentPane(), "会议号解析失败！");
         }
         return s.replace("-", "");
-    }
-
-    protected MettingDTO createMettingTask(MettingDTO mettingDTO) {
-        String cron = mettingDTO.getCron();
-        if (StrUtil.isBlank(cron)) {
-            DateTime time = DateTime.of(mettingDTO.getTime());
-            cron = StrUtil.format("0 {} {} {} {} ?", time.minute(), time.hour(true), time.dayOfMonth(), time.monthBaseOne());
-        }
-        String id = CronUtil.schedule(cron, new Task() {
-            @Override
-            public void execute() {
-                startMetting(mettingDTO.getNum());
-                for (MettingDTO dto : Main.mettingList) {
-                    if (dto.getNum().equals(mettingDTO.getNum())) {
-                        dto.setStatus("会议时间到，进入会议！");
-                        CronUtil.remove(dto.getId());
-                    }
-                }
-                JOptionPane.showMessageDialog(getContentPane(), StrUtil.format("开始会议：【{}】\r\n备注：【{}】", mettingDTO.getNum(), mettingDTO.getDesc()));
-            }
-        });
-        mettingDTO.setId(id);
-        mettingDTO.setStatus("添加完成，等待会议开始！");
-        JOptionPane.showMessageDialog(getContentPane(), StrUtil.format("开始任务\r\n会议号：【{}】\r\n会议时间：{}\r\n会议CRON：{}", mettingDTO.getNum(),
-                DateUtil.formatChineseDate(mettingDTO.getTime(), false, true), cron));
-        if (taskListWindow != null) {
-            taskListWindow.updateTable();
-        }
-        return mettingDTO;
-    }
-
-    public void startMetting(String num) {
-        RuntimeUtil.execForStr("cmd", "/c", "start wemeet://page/inmeeting?meeting_code=" + num);
     }
 
 }

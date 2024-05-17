@@ -3,16 +3,14 @@ package com.howe;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.cron.CronUtil;
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.howe.utils.SwUtils;
+import com.howe.view.WindowFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>@Author lu
@@ -22,11 +20,9 @@ import java.util.List;
  */
 public class Main {
 
-    public static List<MettingDTO> mettingList = new ArrayList<>();
+    public static WindowFrame FRAME;
 
-    protected static WindowFrame FRAME;
-
-    protected static final Image ICON;
+    public static final Image ICON;
 
     static {
         URL resource = ResourceUtil.getResource("1.png");
@@ -44,17 +40,14 @@ public class Main {
                 FRAME = new WindowFrame();
             }
             FRAME.setVisible(true);
-            MettingDTO mettingDTO = new MettingDTO("45661827839", "周例会");
-            mettingDTO.setCron("0 53 16 * * 5");
-            mettingDTO = FRAME.createMettingTask(mettingDTO);
-            mettingList.add(mettingDTO);
+            String num = JOptionPane.showInputDialog(null, "输入周例会会议号：", "45661827839");
+            SwUtils.addWeekMetting(num);
             CronUtil.start();
         });
         initTray();
     }
 
     private static void initTray() {
-
         if (SystemTray.isSupported()) {
             PopupMenu pop = new PopupMenu();
             MenuItem exitItem = new MenuItem("  退出  ");

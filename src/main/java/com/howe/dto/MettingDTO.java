@@ -1,11 +1,10 @@
-package com.howe;
+package com.howe.dto;
 
 import cn.hutool.core.date.DateTime;
+import com.howe.enums.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * <p>@Author lu
@@ -37,9 +36,9 @@ public class MettingDTO {
 
     private String desc;
 
-    private String status;
+    private StatusEnum status;
 
     public Object[] genArr() {
-        return new Object[]{num, time, desc, status};
+        return new Object[]{num, time, desc, status.getDesc()};
     }
 }
