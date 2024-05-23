@@ -78,8 +78,9 @@ public class ConfigUtils {
 
     public static void remove(MettingDTO metting) {
         CronUtil.remove(metting.getId());
-        METTING_LIST.removeIf(m -> m.getNum().equals(metting.getNum()));
-        METTING_LIST.removeIf(m -> m.getId().equals(metting.getId()));
+        METTING_LIST.removeIf(m -> StrUtil.isNotBlank(m.getNum()) && m.getNum().equals(metting.getNum()));
+        METTING_LIST.removeIf(m -> StrUtil.isNotBlank(m.getId()) && m.getId().equals(metting.getId()));
+        write();
     }
 
     private static void write() {

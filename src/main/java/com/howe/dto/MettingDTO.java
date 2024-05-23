@@ -1,5 +1,6 @@
 package com.howe.dto;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.howe.enums.StatusEnum;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,6 @@ public class MettingDTO {
     private StatusEnum status;
 
     public Object[] genArr() {
-        return new Object[]{num, time, desc, status.getDesc()};
+        return new Object[]{num, DateUtil.formatDateTime(time), desc, status.getDesc()};
     }
 }

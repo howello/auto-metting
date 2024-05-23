@@ -188,6 +188,7 @@ public class WindowFrame extends JFrame {
                 JOptionPane.showMessageDialog(getContentPane(), "会议号为空");
                 return;
             }
+            num = num.replace("-", "");
             SwUtils.startMetting(num);
             MettingDTO mettingDTO = new MettingDTO(num, "立即入会");
             mettingDTO.setStatus(StatusEnum.JOIN);
