@@ -1,10 +1,12 @@
 package com.howe.dto;
 
-import cn.hutool.core.date.DateTime;
+import com.alibaba.fastjson2.annotation.JSONField;
 import com.howe.enums.StatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * <p>@Author lu
@@ -30,7 +32,8 @@ public class MettingDTO {
 
     private String num;
 
-    private DateTime time;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private Date time;
 
     private String cron;
 
