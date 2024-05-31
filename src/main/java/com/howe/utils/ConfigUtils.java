@@ -33,10 +33,10 @@ public class ConfigUtils {
         List<MettingDTO> list = JSONArray.parseArray(s, MettingDTO.class);
         if (CollUtil.isNotEmpty(list)) {
             for (MettingDTO metting : list) {
-                if (StatusEnum.ADD.equals(metting.getStatus())) {
+                if (StatusEnum.ADD.equals(metting.getStatus()) || "周例会".equals(metting.getDesc())) {
                     MettingDTO task = SwUtils.createMettingTask(metting);
                     METTING_LIST.add(task);
-                }else {
+                } else {
                     METTING_LIST.add(metting);
                 }
             }
